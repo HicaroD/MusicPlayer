@@ -27,12 +27,15 @@ class MusicPlayer(object):
 		self.window.title("MusicPlayer")
 		self.window.geometry("480x480")
 
+		# Setup padrão para o MusicPlayer funcionar
+		self.draw_buttons()
+		self.current_playlist_path = self.get_playlist_path()
 		self.media_player = vlc.Instance("--loop")
 
 	def get_playlist_path(self):
 		return tkinter.filedialog.askdirectory()
 
-	def addPlaylist(self):
+	def add_music_to_playlist(self):
 		# Criando playlist
 		self.playlist = self.media_player.media_list_new()
 
@@ -61,7 +64,7 @@ class MusicPlayer(object):
 		print("Previous music")
 		self.playlistPlayer.previous()
 
-	def get_musics_in_folder(self):
+	def get_musics_in_playlist(self):
 		musics = []
 		try:
 			musics = [music for music in os.listdir(self.current_playlist_path) if music.endswith(".mp3")]
@@ -74,7 +77,7 @@ class MusicPlayer(object):
 		except Exception as e: 
 			print(f"ERROR --> {e}")
 
-	def drawButtons(self):
+	def draw_buttons(self):
 		self.select_playlist_button()
 		self.previous_music_button()
 		self.pause_music_button()
@@ -102,10 +105,8 @@ class MusicPlayer(object):
 		previous_music_btton.pack(side=tkinter.constants.BOTTOM, anchor=tkinter.constants.SW)
 		
 	def run(self): 
-		self.drawButtons()
-		self.current_playlist_path = self.get_playlist_path()
-		self.get_musics_in_folder()
-		self.addPlaylist()
+		self.get_musics_in_playlist()
+		self.add_music_to_playlist()
 		self.window.mainloop()
 
 
