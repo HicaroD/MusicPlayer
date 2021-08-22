@@ -24,15 +24,15 @@ class MusicPlayer(object):
     def __init__(self):
         # Configurações do layout da janela
         self.window = tkinter.Tk()
-        self.window.title("MusicPlayer")
+        self.window.title("Music Player")
         self.window.geometry("480x480")
 
         # Setup padrão para o MusicPlayer funcionar
         self.draw_buttons()
         self.current_playlist_path = self.ask_for_playlist_path()
         self.Player = vlc.Instance("--loop")
-
         self.playerList = self.create_playlist()
+        self.window.mainloop()
 
     def ask_for_playlist_path(self):
         return tkinter.filedialog.askdirectory()
@@ -44,10 +44,11 @@ class MusicPlayer(object):
         playlist = self.Player.media_list_new() # Criar playlist vazia
 
         for music in self.get_musics_in_folder():
+            print(f"Fetching {music} from {self.current_playlist_path}")
             playlist.add_media(self.Player.media_new(music)) 
 
-        playerList = self.Player.media_list_player_new() # Criar um tocador de playlist
-        playerList.set_media_list(playlist)
+        playerList = self.Player.media_list_player_new() # Criar um tocador 
+        playerList.set_media_list(playlist) # Adicionando playlist ao tocador 
 
         return playerList
 
@@ -94,10 +95,6 @@ class MusicPlayer(object):
         previous_music_btton = tkinter.Button(self.window, text="Previous", command=self.previous_music)
         previous_music_btton.pack(side=tkinter.constants.BOTTOM, anchor=tkinter.constants.SW)
         
-    def run(self): 
-        print(self.get_musics_in_folder())
-        self.window.mainloop()
-
 
 if __name__ == "__main__": 
-    mainWindow = MusicPlayer().run()
+    mainWindow = MusicPlayer()
