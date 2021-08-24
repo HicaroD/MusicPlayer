@@ -17,41 +17,41 @@ TODO:
     [] Obter as informações da música que está tocando atualmente
     [] Mostrar o nome da atual música que está tocando no centro da tela
     [] Personalizar melhor os botões (talvez usar imagens caso possível - Buscar images grátis)
-    [] BUG: Quando inicio o programa, mas fecho a primeira aba de procurar playlist, se eu quiser colocar outra playlist o programa não funciona
+    [X] BUG: Quando inicio o programa, mas fecho a primeira aba de procurar playlist, se eu quiser colocar outra playlist o programa não funciona
 """
 
 
 class MusicPlayer(tkinter.Frame):
+
     def __init__(self, master = None):
         # Configurações do layout da janela
         tkinter.Frame.__init__(self, master)
         self.master = master
-        self.configure_gui()
 
         # Setup padrão para o MusicPlayer funcionar
-        self.current_music_name = tkinter.StringVar()
         self.player_instance = vlc.Instance("--loop")
-        self.current_playlist_path = tkinter.filedialog.askdirectory()
-        self.music_player = self.create_playlist_player()
-        self.create_current_music_label()
+        self.current_playlist_path = os.path.expanduser("~") # Home path
+        self.configure_gui()
+        self.music_player = None
 
     def configure_gui(self):
         self.master.title("Music Player")
         self.master.geometry("480x480")
         self.master.resizable(False, False)
+        self.master.configure(bg = "black")
         self.create_buttons()
 
     def ask_for_playlist_path(self):
         # Ask for a new playlist to play
         self.current_playlist_path = tkinter.filedialog.askdirectory()
 
-        if(self.music_player.is_playing()):
+        if(self.music_player is not None and self.music_player.is_playing()):
             self.music_player.stop()
 
         print(f"Changing playlist to {self.current_playlist_path}")
         self.music_player = self.create_playlist_player()
 
-    def get_musics_in_folder(self):
+    def get_songs_in_folder(self):
         try:
             return [os.path.join(self.current_playlist_path, music) for music in os.listdir(self.current_playlist_path) if music.endswith(".mp3")]
 
@@ -61,11 +61,11 @@ class MusicPlayer(tkinter.Frame):
             return None
 
     def create_playlist_player(self):
-        songs = self.get_musics_in_folder()
-        if(songs):
-            playlist = self.player_instance.media_list_new(self.get_musics_in_folder()) # Criar playlist vazia
+        self.songs = self.get_songs_in_folder()
+        if(self.songs):
+            playlist = self.player_instance.media_list_new(self.get_songs_in_folder()) # Criar playlist vazia
             playerList = self.player_instance.media_list_player_new() # Criar um tocador 
-            print(f"Fetching {songs} files and setting media list")
+            print(f"Fetching {self.songs} playlist and adding to the playlist player")
             playerList.set_media_list(playlist) # Adicionando playlist ao tocador 
             return playerList
 
@@ -91,11 +91,6 @@ class MusicPlayer(tkinter.Frame):
         self.pause_music_button()
         self.play_music_button()
         self.next_music_button()
-
-    def create_current_music_label(self):
-        self.current_music_name.set("HELLO WORLD TESTING")
-        music_label = tkinter.Label(self.master, textvariable = self.current_music_name)
-        music_label.place(relx=0.5, rely=0.4, anchor=tkinter.constants.CENTER)
 
     def select_playlist_button(self): 
         playlist_select_btn = tkinter.Button(self.master, text="Open a playlist", fg="blue", command=self.ask_for_playlist_path)
