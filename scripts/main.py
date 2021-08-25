@@ -80,7 +80,7 @@ class MusicPlayer(tkinter.Frame):
     def create_playlist_player(self):
         self.songs = self.get_songs_in_folder()
         if(self.songs):
-            self.playlist = self.player_instance.media_list_new(self.get_songs_in_folder()) # Criar playlist vazia
+            self.playlist = self.player_instance.media_list_new(self.get_songs_in_folder()) # Criar playlist a partir da pasta
             playerList = self.player_instance.media_list_player_new() # Criar um tocador 
             playerList.set_media_list(self.playlist) # Adicionando playlist ao tocador 
             print(f"Fetching {self.songs} playlist and adding to the playlist player")
