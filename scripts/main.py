@@ -1,10 +1,10 @@
 import tkinter
 import vlc
 import os
-import tkinter.filedialog 
+import tkinter.filedialog
 
 """
-TODO: 
+TODO:
     [X] Obter os árquivos de aúdio na pasta
     [X] Tocar áudio
     [X] Criar botão para escolher a playlist
@@ -22,15 +22,12 @@ TODO:
     [] Adicionar funcionalidades de aumentar / diminuir o volume da música
 """
 
-
 class MusicPlayer(tkinter.Frame):
     def __init__(self, master = None):
         # Configurações do layout da janela
         tkinter.Frame.__init__(self, master)
         self.master = master
         self.configure_gui()
-
-        # Setup padrão para o MusicPlayer funcionar
         self.configure_mp3_player()
 
     def configure_gui(self):
@@ -43,8 +40,19 @@ class MusicPlayer(tkinter.Frame):
         self.player_instance = vlc.Instance("--loop")
         self.current_playlist_path = None
         self.music_player = None
-        self.current_music = str()
-    
+        self.current_music_name = self.get_current_music_name()
+
+    def select_music(self):
+        music_path = tkinter.filedialog.askopenfilename()
+        if(self.music_player is not None and self.music_player.is_playing()):
+            self.music_player.stop()
+        print(f"Fetching {music_path} to music player")
+        self.music_player = vlc.MediaPlayer(music_path)
+
+    def create_music_label(self):
+        self.current_music_label = tkinter.Label(self.master, text = self.get_current_music_name())
+        self.current_music_label.place(relx=0.5, rely=0.6, anchor = tkinter.constants.CENTER)
+
     def ask_for_playlist_path(self):
         # Ask for a new playlist to play
         self.current_playlist_path = tkinter.filedialog.askdirectory()
@@ -61,21 +69,15 @@ class MusicPlayer(tkinter.Frame):
 
         except (TypeError, FileNotFoundError) as e:
             print("Insert a playlist or a valid playlist (which is a folder with .mp3 files)")
-            print(f"Error code: {e}")
+            print(f"Error code -> {e}")
             return None
 
-    def get_current_music_name(self): 
+    def get_current_music_name(self):
         if(self.music_player is not None and self.music_player.is_playing()):
             music_name = self.music_player.get_media_player().get_media().get_mrl()
-            print("get_current_music_name -->" + music_name)
+            print("get_current_music_name() -->" + music_name)
             # Find the last occurence of '/' and get the rest of the string, it's gonna be the name of the music
             return music_name[music_name.rindex('/'):]
-
-    def create_music_name_label(self):
-        self.current_music = self.get_current_music_name()
-        print("create_music_name_label -->" + self.current_music)
-        music_name_label = tkinter.Label(self.master, text = self.current_music)
-        music_name_label.place(relx=0.5, rely=0.4, anchor=tkinter.constants.CENTER)
 
     def create_playlist_player(self):
         self.songs = self.get_songs_in_folder()
@@ -89,8 +91,7 @@ class MusicPlayer(tkinter.Frame):
     def play_music(self):
         print("Playing music")
         self.music_player.play()
-        self.create_music_name_label()
-        
+
     def pause_music(self):
         print("Pausing music")
         self.music_player.pause()
@@ -104,13 +105,18 @@ class MusicPlayer(tkinter.Frame):
         self.music_player.previous()
 
     def create_buttons(self):
+        self.select_music_button()
         self.select_playlist_button()
         self.previous_music_button()
         self.pause_music_button()
         self.play_music_button()
         self.next_music_button()
 
-    def select_playlist_button(self): 
+    def select_music_button(self):
+        select_music_bttn = tkinter.Button(self.master, text = "Select music", command = self.select_music)
+        select_music_bttn.pack(side = tkinter.constants.TOP, anchor = tkinter.constants.NE)
+
+    def select_playlist_button(self):
         playlist_select_btn = tkinter.Button(self.master, text="Open a playlist", fg="blue", command=self.ask_for_playlist_path)
         playlist_select_btn.pack(side = tkinter.constants.TOP, anchor = tkinter.constants.NW)
 
@@ -118,10 +124,10 @@ class MusicPlayer(tkinter.Frame):
         play_music_bttn = tkinter.Button(self.master, text="Play", command=self.play_music)
         play_music_bttn.place(relx=0.5, rely=0.5, anchor=tkinter.constants.CENTER)
 
-    def pause_music_button(self):   
+    def pause_music_button(self):
         pause_bttn = tkinter.Button(self.master, text="Pause", command=self.pause_music)
         pause_bttn.place(relx=0.5, rely=0.6, anchor = tkinter.constants.CENTER)
-        
+
     def next_music_button(self):
         next_music_btton = tkinter.Button(self.master, text="Next", command=self.next_music)
         next_music_btton.pack(side = tkinter.constants.RIGHT)
@@ -131,7 +137,7 @@ class MusicPlayer(tkinter.Frame):
         previous_music_btton.pack(side = tkinter.constants.LEFT)
 
 
-if __name__ == "__main__": 
+if __name__ == "__main__":
     root = tkinter.Tk()
     music_player = MusicPlayer(root)
     root.mainloop()
