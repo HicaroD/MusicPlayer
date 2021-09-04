@@ -1,7 +1,6 @@
 import tkinter
 import tkinter.filedialog
 import os
-import vlc
 from player import Player
 
 """
