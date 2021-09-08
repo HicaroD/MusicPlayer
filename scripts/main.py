@@ -5,9 +5,9 @@ from player import Player
 
 """
 TODO:
+    [] Adicionar funcionalidades de aumentar / diminuir o volume da música
     [] Configurar o nome atual da música para atualizar automaticamente quando mudamos de música
     [] Personalizar melhor os botões (talvez usar imagens caso possível - Buscar images grátis)
-    [] Adicionar funcionalidades de aumentar / diminuir o volume da música
 """
 
 class MusicPlayer(tkinter.Frame):
