@@ -2,22 +2,25 @@ import tkinter
 import vlc
 import os
 
+# TODO: Talvez eu deva separar a parte de gerenciamento de playlist em outra classe e deixa a classe Player apenas para gerenciar como a música toca.
+#       Existe mais de uma responsabilidade nessa classe Player quando deveria ser apenas sobre o tocador
+
 class Player(object):
     def __init__(self):
         self.configure_mp3_player()
 
-    def configure_mp3_player(self):
+    def configure_mp3_player(self) -> None:
         self.player_instance = vlc.Instance("--loop")
         self.music_player = None
-        self.current_music_name = self.get_current_music_name()
 
-    def select_music(self):
+    def select_music(self) -> None:
         music_path = tkinter.filedialog.askopenfilename()
         if not music_path.endswith(".mp3"):
-            raise Exception("Select an valid file -> mp3")
+            raise ValueError("Select an valid file -> mp3")
 
         if(self.music_player is not None and self.music_player.is_playing()):
             self.music_player.stop()
+
         print(f"Fetching {music_path} to music player")
         self.music_player = vlc.MediaPlayer(music_path)
 
@@ -40,21 +43,17 @@ class Player(object):
             print(f"Error code -> {e}")
             return None
 
-    def get_current_music_name(self):
-        if(self.music_player is not None and self.music_player.is_playing()):
-            music_name = self.music_player.get_media_player().get_media().get_mrl()
-            print("get_current_music_name() -->" + music_name)
-            # Find the last occurence of '/' and get the rest of the string, it's gonna be the name of the music
-            return music_name[music_name.rindex('/'):]
-
     def create_playlist_player(self):
         self.songs = self.get_songs_in_folder()
         if(self.songs):
             self.playlist = self.player_instance.media_list_new(self.get_songs_in_folder()) # Criar playlist a partir da pasta
             playerList = self.player_instance.media_list_player_new() # Criar um tocador 
-            playerList.set_media_list(self.playlist) # Adicionando playlist ao tocador 
+            self.put_songs_in_playlist_player(playerList)
+        return playerList
+
+    def put_songs_in_playlist_player(self, playlist_player):
+            playlist_player.set_media_list(self.playlist) # Adicionando playlist ao tocador 
             print(f"Fetching {self.songs} playlist and adding to the playlist player")
-            return playerList
 
     def play_and_pause_music(self):
         if(self.music_player.is_playing()):
