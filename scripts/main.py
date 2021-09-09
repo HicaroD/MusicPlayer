@@ -22,7 +22,7 @@ class MusicPlayer(tkinter.Frame):
         self.master.title("Music Player")
         self.master.geometry("300x300")
         self.master.resizable(False, False)
-        self.create_buttons()
+        self.draw_buttons()
 
     def draw_buttons(self):
         self.select_music_button()
