@@ -24,7 +24,7 @@ class MusicPlayer(tkinter.Frame):
         self.master.resizable(False, False)
         self.create_buttons()
 
-    def create_buttons(self):
+    def draw_buttons(self):
         self.select_music_button()
         self.select_playlist_button()
         self.previous_music_button()
