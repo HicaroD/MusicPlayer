@@ -1,7 +1,7 @@
 import tkinter
 import tkinter.filedialog
 import os
-from player import Player
+from player import MusicPlayer
 
 """
 TODO:
@@ -16,7 +16,7 @@ class Application(tkinter.Frame):
         # Configurações do layout da janela
         tkinter.Frame.__init__(self, master)
         self.master = master
-        self.player = Player()
+        self.player = MusicPlayer()
         self.configure_gui()
 
     def configure_gui(self):
@@ -37,7 +37,7 @@ class Application(tkinter.Frame):
         select_music_bttn.pack(side = tkinter.constants.TOP, anchor = tkinter.constants.CENTER)
 
     def select_playlist_button(self):
-        playlist_select_btn = Button.make_button(self.master, "Open playlist", self.player.ask_for_playlist_path)
+        playlist_select_btn = Button.make_button(self.master, "Open playlist", self.player.create_player)
         playlist_select_btn.pack(side = tkinter.constants.TOP, anchor = tkinter.constants.CENTER)
 
     def play_music_button(self):
@@ -53,7 +53,6 @@ class Application(tkinter.Frame):
         previous_music_button.pack(side = tkinter.constants.LEFT)
 
 class Button:
-    # ps.: It's not part of tkinter.Button() class
     @staticmethod
     def make_button(master, text, target):
         return tkinter.Button(master, text = text, command = target)
