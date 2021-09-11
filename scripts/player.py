@@ -41,12 +41,10 @@ class Player:
         return vlc.MediaPlayer(music_path)
 
     def create_player(self) -> vlc.MediaListPlayer:
-        """Create a new music player from playlist folder"""
         self.current_folder_path = self.playlist.ask_for_folder_path()
         songs = self.playlist.get_songs_in_folder(self.current_folder_path)
-        print(f"Songs in folder: {songs}")
-        playlist = self.playlist.create_playlist(songs) # Creating MediaList object
-        player = self.player_instance.media_list_player_new() # Creating player
+        playlist = self.playlist.create_playlist(songs)
+        player = self.player_instance.media_list_player_new()
         player.set_media_list(playlist)
 
         return player
