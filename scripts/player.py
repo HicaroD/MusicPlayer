@@ -5,68 +5,84 @@ import os
 # TODO: Talvez eu deva separar a parte de gerenciamento de playlist em outra classe e deixa a classe Player apenas para gerenciar como a música toca.
 #       Existe mais de uma responsabilidade nessa classe Player quando deveria ser apenas sobre o tocador
 
-class Player(object):
+class Playlist:
     def __init__(self):
-        self.configure_mp3_player()
-
-    def configure_mp3_player(self) -> None:
         self.player_instance = vlc.Instance("--loop")
-        self.music_player = None
 
-    def select_music(self) -> None:
-        music_path = tkinter.filedialog.askopenfilename()
-        if not music_path.endswith(".mp3"):
-            raise ValueError("Select an valid file -> mp3")
-
-        if(self.music_player is not None and self.music_player.is_playing()):
-            self.music_player.stop()
-
-        print(f"Fetching {music_path} to music player")
-        self.music_player = vlc.MediaPlayer(music_path)
-
-    def ask_for_playlist_path(self):
-        # Ask for a new playlist to play
-        self.current_playlist_path = tkinter.filedialog.askdirectory()
-
-        if(self.music_player is not None and self.music_player.is_playing()):
-            self.music_player.stop()
-
-        print(f"Changing playlist to {self.current_playlist_path}")
-        self.music_player = self.create_playlist_player()
-
-    def get_songs_in_folder(self):
+    def get_songs_in_folder(self, folder_path) -> list:
         try:
-            return [os.path.join(self.current_playlist_path, music) for music in os.listdir(self.current_playlist_path) if music.endswith(".mp3")]
+            playlist_folder = os.listdir(folder_path)
+            return [os.path.join(folder_path, music) for music in playlist_folder if music.endswith(".mp3")]
 
         except (TypeError, FileNotFoundError) as e:
             print("Insert a playlist or a valid playlist (which is a folder with .mp3 files)")
             print(f"Error code -> {e}")
             return None
 
-    def create_playlist_player(self):
-        self.songs = self.get_songs_in_folder()
-        if(self.songs):
-            self.playlist = self.player_instance.media_list_new(self.get_songs_in_folder()) # Criar playlist a partir da pasta
-            playerList = self.player_instance.media_list_player_new() # Criar um tocador 
-            self.put_songs_in_playlist_player(playerList)
-        return playerList
+    def ask_for_folder_path(self):
+        return tkinter.filedialog.askdirectory()
 
-    def put_songs_in_playlist_player(self, playlist_player):
-            playlist_player.set_media_list(self.playlist) # Adicionando playlist ao tocador 
-            print(f"Fetching {self.songs} playlist and adding to the playlist player")
+    def create_playlist(self, songs):
+        if(songs):
+            playlist = self.player_instance.media_list_new(songs) # Criando objeto do tipo MediaList (playlist)
+            return playlist
+
+class Player:
+    def __init__(self):
+        self.player_instance = vlc.Instance("--loop")
+        self.playlist = Playlist()
+
+    def select_music(self) -> None:
+        music_path = tkinter.filedialog.askopenfilename()
+
+        if not music_path.endswith(".mp3"):
+            raise ValueError("Select an valid file -> mp3")
+
+        return vlc.MediaPlayer(music_path)
+
+    def create_player(self) -> vlc.MediaListPlayer:
+        """Create a new music player from playlist folder"""
+        self.current_folder_path = self.playlist.ask_for_folder_path()
+        songs = self.playlist.get_songs_in_folder(self.current_folder_path)
+        print(f"Songs in folder: {songs}")
+        playlist = self.playlist.create_playlist(songs) # Creating MediaList object
+        player = self.player_instance.media_list_player_new() # Creating player
+        player.set_media_list(playlist)
+
+        return player
+
+class MusicPlayer():
+    def __init__(self):
+        self.configure_mp3_player()
+
+    def configure_mp3_player(self) -> None:
+        self.player_instance = vlc.Instance("--loop")
+        self.player = Player()
+        self.music_player = None
+
+    def is_anything_playing(self) -> bool:
+        return self.music_player.is_playing()
+
+    def create_player(self) -> None:
+        """Creates an MusicPlayer using an entire folder with .mp3 files"""
+        self.music_player = self.player.create_player()
+
+    def select_music(self) -> None:
+        """Selects an individual music"""
+        if(self.is_anything_playing()):
+            self.music_player.stop()
+
+        print("Selecting music")
+        self.music_player = self.player.select_music()
 
     def play_and_pause_music(self):
-        if(self.music_player.is_playing()):
-            print("Pausing music")
+        if(self.is_anything_playing()):
             self.music_player.pause()
         else:
-            print("Playing music")
             self.music_player.play()
 
     def next_music(self):
-        print("Next music")
         self.music_player.next()
 
     def previous_music(self):
-        print("Previous music")
         self.music_player.previous()
