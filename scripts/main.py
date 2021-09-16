@@ -5,12 +5,17 @@ from player import MusicPlayer
 
 """
 TODO:
-    [] Pensar em maneiras melhores de gerenciar a criação de botões, existe muito código repetido
-       de manter e extender caso eu queira adicionar novos botões
     [] Adicionar funcionalidades de aumentar / diminuir o volume da música
     [] Configurar o nome atual da música para atualizar automaticamente quando mudamos de música
-    [] Personalizar melhor os botões (talvez usar imagens caso possível - Buscar images grátis)
 """
+
+
+class Button:
+    @staticmethod
+    def make_button(master, text, target):
+        return tkinter.Button(master, text = text, command = target)
+
+
 class Application(tkinter.Frame):
     def __init__(self, master = None):
         # Configurações do layout da janela
@@ -52,10 +57,6 @@ class Application(tkinter.Frame):
         previous_music_button = Button.make_button(self.master, "Previous", self.player.previous_music)
         previous_music_button.pack(side = tkinter.constants.LEFT)
 
-class Button:
-    @staticmethod
-    def make_button(master, text, target):
-        return tkinter.Button(master, text = text, command = target)
 
 if __name__ == "__main__":
     root = tkinter.Tk()

@@ -2,7 +2,7 @@ import tkinter
 import vlc
 import os
 
-class Playlist:
+class PlaylistManager:
     def __init__(self):
         self.player_instance = vlc.Instance("--loop")
 
@@ -28,7 +28,7 @@ class Playlist:
 class Player:
     def __init__(self):
         self.player_instance = vlc.Instance("--loop")
-        self.playlist = Playlist()
+        self.playlist = PlaylistManager()
 
     def select_music(self) -> vlc.MediaPlayer:
         music_path = tkinter.filedialog.askopenfilename()
@@ -36,23 +36,20 @@ class Player:
         if not music_path.endswith(".mp3"):
             raise ValueError("Select an valid file -> mp3")
 
-        return vlc.MediaPlayer(music_path)
+        return vlc.MediaPlayer(music_path), music_path
 
-    def create_player(self) -> vlc.MediaListPlayer:
-        try:
-            self.current_folder_path = self.playlist.ask_for_folder_path()
-            print(f"current_folder_path: {self.current_folder_path}")
+    def create_player(self):
+       self.current_folder_path = self.playlist.ask_for_folder_path()
+       print(f"current_folder_path: {self.current_folder_path}")
 
-            if(type(self.current_folder_path) is not tuple or self.current_folder_path != ""):
-                songs = self.playlist.get_songs_in_folder(self.current_folder_path)
-                playlist = self.playlist.create_playlist(songs)
-                player = self.player_instance.media_list_player_new()
-                player.set_media_list(playlist)
-                return player
-            raise Exception("An error occurs while trying to create a music_player")
+       player = self.player_instance.media_list_player_new()
 
-        except Exception as e: 
-            print(e)
+       if(type(self.current_folder_path) is str and len(self.current_folder_path) > 0):
+           songs = self.playlist.get_songs_in_folder(self.current_folder_path)
+           playlist = self.playlist.create_playlist(songs)
+           player.set_media_list(playlist)
+           return player
+       return player # Returns an empty player 
 
 
 class MusicPlayer():
@@ -65,7 +62,8 @@ class MusicPlayer():
         self.music_player = None
 
     def is_anything_playing(self) -> bool:
-        return self.music_player.is_playing()
+        if(self.music_player is not None):
+            return self.music_player.is_playing()
 
     def create_player(self) -> None:
         """Creates an MusicPlayer using an entire folder with .mp3 files"""
@@ -76,8 +74,8 @@ class MusicPlayer():
         if(self.is_anything_playing()):
             self.music_player.stop()
 
-        print("Selecting music")
-        self.music_player = self.player.select_music()
+        self.music_player, music_path = self.player.select_music()
+        print(f"Selecting music: {music_path}")
 
     def play_and_pause_music(self) -> None:
         if(self.is_anything_playing()):
