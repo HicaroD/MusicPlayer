@@ -1,4 +1,4 @@
-/scripts/env
+scripts/env
 notes.txt
-/scripts/__pycache__
-/.vim
+scripts/__pycache__
+.vim/
