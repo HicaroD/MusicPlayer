@@ -3,13 +3,6 @@ import tkinter.filedialog
 import os
 from player import MusicPlayer
 
-"""
-TODO:
-    [] Adicionar funcionalidades de aumentar / diminuir o volume da música
-    [] Configurar o nome atual da música para atualizar automaticamente quando mudamos de música
-"""
-
-
 class Button:
     @staticmethod
     def make_button(master, text, target):
