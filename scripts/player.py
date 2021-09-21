@@ -1,5 +1,4 @@
 import tkinter
-import tkinter.messagebox
 import vlc
 import os
 
