@@ -2,10 +2,15 @@ import tkinter
 import vlc
 import os
 
-class PlaylistManager:
-    def __init__(self):
-        self.player_instance = vlc.Instance("--loop")
+"""
+TODO:
+    [] Criar uma maneira de fazer tkinter mostrar mensagens de erros quando acontece alguma Exception
+"""
 
+# Instance of Vlc to create MediaList, MediaListPlayer and so on
+vlc_instance = vlc.Instance("--loop")
+
+class PlaylistManager:
     def get_songs_in_folder(self, folder_path):
         try:
             print(f"Fetching musics from folder: {folder_path}")
@@ -21,13 +26,13 @@ class PlaylistManager:
 
     def create_playlist(self, songs) -> vlc.MediaList:
         if(songs):
-            playlist = self.player_instance.media_list_new(songs) # Criando objeto do tipo MediaList (playlist)
+            playlist = vlc_instance.media_list_new(songs) # Criando objeto do tipo MediaList (playlist)
             return playlist
 
 
-class Player:
+class PlayerCreator:
+    """Creates an instance of a Music Player"""
     def __init__(self):
-        self.player_instance = vlc.Instance("--loop")
         self.playlist = PlaylistManager()
 
     def select_music(self) -> vlc.MediaPlayer:
@@ -42,7 +47,7 @@ class Player:
        self.current_folder_path = self.playlist.ask_for_folder_path()
        print(f"current_folder_path: {self.current_folder_path}")
 
-       player = self.player_instance.media_list_player_new()
+       player = vlc_instance.media_list_player_new()
 
        if(type(self.current_folder_path) is str and len(self.current_folder_path) > 0):
            songs = self.playlist.get_songs_in_folder(self.current_folder_path)
@@ -57,8 +62,7 @@ class MusicPlayer():
         self.configure_mp3_player()
 
     def configure_mp3_player(self) -> None:
-        self.player_instance = vlc.Instance("--loop")
-        self.player = Player()
+        self.player = PlayerCreator()
         self.music_player = None
 
     def is_anything_playing(self) -> bool:
