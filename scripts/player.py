@@ -1,24 +1,25 @@
 import tkinter
+import tkinter.messagebox
 import vlc
 import os
 
-"""
-TODO:
-    [] Criar uma maneira de fazer tkinter mostrar mensagens de erros quando acontece alguma Exception
-"""
-
-# Instance of Vlc to create MediaList, MediaListPlayer and so on
 vlc_instance = vlc.Instance("--loop")
 
 class PlaylistManager:
     def get_songs_in_folder(self, folder_path):
         try:
             print(f"Fetching musics from folder: {folder_path}")
-            return [os.path.join(folder_path, music) for music in os.listdir(folder_path) if music.endswith(".mp3")]
+            songs = [os.path.join(folder_path, music) for music in os.listdir(folder_path) if music.endswith(".mp3")]
+
+            if not songs:
+                raise FileNotFoundError
+
+            return songs
 
         except (TypeError, FileNotFoundError) as e:
-            print("Insert a playlist or a valid playlist (which is a folder with .mp3 files)")
-            print(f"Error code -> {e}")
+            print(e)
+            tkinter.messagebox.showwarning(title= "Incompatible playlist",
+                                           message="Insert a playlist or a valid playlist (which is a folder with .mp3 files)")
             return None
 
     def ask_for_folder_path(self):
@@ -26,11 +27,11 @@ class PlaylistManager:
 
     def create_playlist(self, songs) -> vlc.MediaList:
         if(songs):
-            playlist = vlc_instance.media_list_new(songs) # Criando objeto do tipo MediaList (playlist)
+            playlist = vlc_instance.media_list_new(songs)
             return playlist
 
 
-class PlayerCreator:
+class MusicPlayerCreator:
     """Creates an instance of a Music Player"""
     def __init__(self):
         self.playlist = PlaylistManager()
@@ -62,10 +63,10 @@ class MusicPlayer():
         self.configure_mp3_player()
 
     def configure_mp3_player(self) -> None:
-        self.player = PlayerCreator()
+        self.player = MusicPlayerCreator()
         self.music_player = None
 
-    def is_anything_playing(self) -> bool:
+    def is_anything_playing(self):
         if(self.music_player is not None):
             return self.music_player.is_playing()
 
