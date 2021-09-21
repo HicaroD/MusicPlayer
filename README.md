@@ -1,3 +1,3 @@
 # MusicPlayer
 Simple music player in Python
-![app_image]("img/main_app_img.png")
+![img](img/main_app_img.png)
