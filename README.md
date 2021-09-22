@@ -22,4 +22,4 @@ cd scripts/ && python3.8 main.py
 ```
 
 ## License 
-This project is licensed under the terms of the [MIT license](https://choosealicense.com/licenses/mit/).
+This project is licensed under the terms of the [MIT license](./LICENSE).
