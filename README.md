@@ -1,5 +1,6 @@
 # MusicPlayer
-Simple music player in Python
+**WARNING**: It's very unstable! (A lot of segmentation faults)
+Simple music player in Python.
 ![img](img/main_app_img.png)
 
 ## Instalation
