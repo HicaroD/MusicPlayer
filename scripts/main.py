@@ -1,6 +1,6 @@
 import tkinter
 import tkinter.filedialog
-import os
+
 from player import MusicPlayer
 
 class Button:
@@ -10,7 +10,7 @@ class Button:
 
 
 class Application(tkinter.Frame):
-    def __init__(self, master = None):
+    def __init__(self, master):
         # Configurações do layout da janela
         tkinter.Frame.__init__(self, master)
         self.master = master
@@ -35,7 +35,7 @@ class Application(tkinter.Frame):
         select_music_bttn.pack(side = tkinter.constants.TOP, anchor = tkinter.constants.CENTER)
 
     def select_playlist_button(self) -> None:
-        playlist_select_btn = Button.make_button(self.master, "Open playlist", self.player.create_player)
+        playlist_select_btn = Button.make_button(self.master, "Open playlist", self.player.create_instance_of_music_player)
         playlist_select_btn.pack(side = tkinter.constants.TOP, anchor = tkinter.constants.CENTER)
 
     def play_music_button(self) -> None:
