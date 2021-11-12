@@ -69,7 +69,7 @@ class MusicPlayer():
         if(self.music_player is not None):
             return self.music_player.is_playing()
 
-    def create_player(self) -> None:
+    def create_instance_of_music_player(self) -> None:
         """Creates an MusicPlayer using an entire folder with .mp3 files"""
         self.music_player = self.player.create_player()
 
